@@ -1,10 +1,3 @@
-# shourl
-
-`shourl` is a library to create short URLs.
-
-## Example of using
-
-```go
 package main
 
 import (
@@ -24,5 +17,3 @@ func main() {
 	long := sh.Resolve(short)
 	fmt.Println("Long:", long)
 }
-
-```
