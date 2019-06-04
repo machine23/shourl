@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"strings"
+	"time"
 )
 
 type engine interface {
@@ -15,6 +16,10 @@ type engine interface {
 type Store struct {
 	storeType string
 	engine
+}
+
+var timestamp = func() int64 {
+	return time.Now().Unix()
 }
 
 // New creates store.
@@ -29,7 +34,8 @@ func New(storeType string) (*Store, error) {
 }
 
 func newID(v string) string {
-	return fmt.Sprintf("%x", crc32.ChecksumIEEE([]byte(v)))
+	csum := crc32.ChecksumIEEE([]byte(v))
+	return fmt.Sprintf("%x%x", timestamp(), csum)
 }
 
 // Type returns a type of the store

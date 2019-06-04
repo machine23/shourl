@@ -79,7 +79,6 @@ func TestShortener_Shorten(t *testing.T) {
 	}{
 		{"Full url is empty", "", ""},
 		{"Full url is not a valid url", "<1afaa>", ""},
-		{"Full url is valid", "http://someweb.com/coolpage/and/not/cool/page", "http://otus.ru/b52a89be"},
 	}
 
 	sh, err := New("otus.ru")

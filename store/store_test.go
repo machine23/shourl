@@ -5,6 +5,12 @@ import (
 	"testing"
 )
 
+func init() {
+	timestamp = func() int64 {
+		return 1257894000
+	}
+}
+
 func TestNew(t *testing.T) {
 	// test memory
 	want := &Store{storeType: "memory", engine: &memory{}}
@@ -34,8 +40,8 @@ func Test_newID(t *testing.T) {
 		val  string
 		want string
 	}{
-		{"asdf", "5129f3bd"},
-		{"https://google.com", "5b1a2675"},
+		{"asdf", "4af9f0705129f3bd"},
+		{"https://google.com", "4af9f0705b1a2675"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.val, func(t *testing.T) {
@@ -52,7 +58,7 @@ func TestStore_AddURL(t *testing.T) {
 		t.Fatal("Failed to make a memory store")
 	}
 	url := "https://google.com"
-	expectedID := "5b1a2675"
+	expectedID := "4af9f0705b1a2675"
 	id, err := store.AddURL(url)
 	if err != nil {
 		t.Fatalf("AddURL error: %v", err)
