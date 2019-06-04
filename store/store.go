@@ -8,6 +8,7 @@ import (
 )
 
 type engine interface {
+	getID(value string) string
 	get(id string) string
 	put(id, value string) error
 }
@@ -49,7 +50,12 @@ func (s Store) AddURL(url string) (string, error) {
 	if url == "" {
 		return "", fmt.Errorf("Empty url is not allowed")
 	}
-	id := newID(url)
+	id := s.getID(url)
+	if id != "" {
+		return id, nil
+	}
+
+	id = newID(url)
 	if err := s.put(id, url); err != nil {
 		return "", err
 	}

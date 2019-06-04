@@ -5,12 +5,6 @@ import (
 	"testing"
 )
 
-func init() {
-	timestamp = func() int64 {
-		return 1257894000
-	}
-}
-
 func TestNew(t *testing.T) {
 	// test memory
 	want := &Store{storeType: "memory", engine: &memory{}}
@@ -35,24 +29,12 @@ func TestNew(t *testing.T) {
 	}
 }
 
-func Test_newID(t *testing.T) {
-	tests := []struct {
-		val  string
-		want string
-	}{
-		{"asdf", "4af9f0705129f3bd"},
-		{"https://google.com", "4af9f0705b1a2675"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.val, func(t *testing.T) {
-			if got := newID(tt.val); got != tt.want {
-				t.Errorf("newID('%v') = '%v', want '%v'", tt.val, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestStore_AddURL(t *testing.T) {
+	extimestamp := timestamp
+	timestamp = func() int64 {
+		return 1257894000
+	}
+
 	store, err := New("memory")
 	if err != nil {
 		t.Fatal("Failed to make a memory store")
@@ -70,10 +52,22 @@ func TestStore_AddURL(t *testing.T) {
 		t.Fatalf("AddURL didn't put the url into the store")
 	}
 
+	timestamp = extimestamp
+
+	// Should return the same ID for the same url
+	secondID, err := store.AddURL(url)
+	if err != nil {
+		t.Fatalf("AddURL error adding the same url: %v", err)
+	}
+	if secondID != id {
+		t.Fatalf("Should return same ID for the same url: got %v, want %v", secondID, id)
+	}
+
 	_, err = store.AddURL("")
 	if err == nil {
 		t.Fatalf("AddURL for an empty url should return an error, but doesn't")
 	}
+
 }
 
 func TestStore_GetURL(t *testing.T) {
