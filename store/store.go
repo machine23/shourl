@@ -2,10 +2,14 @@ package store
 
 import (
 	"fmt"
-	"hash/crc32"
+	"strconv"
 	"strings"
 	"time"
+
+	"encoding/base64"
 )
+
+var storeIndex int
 
 type engine interface {
 	getID(value string) string
@@ -35,8 +39,8 @@ func New(storeType string) (*Store, error) {
 }
 
 func newID(v string) string {
-	csum := crc32.ChecksumIEEE([]byte(v))
-	return fmt.Sprintf("%x%x", timestamp(), csum)
+	storeIndex++
+	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString([]byte(strconv.Itoa(storeIndex)))
 }
 
 // Type returns a type of the store

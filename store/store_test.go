@@ -40,7 +40,7 @@ func TestStore_AddURL(t *testing.T) {
 		t.Fatal("Failed to make a memory store")
 	}
 	url := "https://google.com"
-	expectedID := "4af9f0705b1a2675"
+	expectedID := "MQ"
 	id, err := store.AddURL(url)
 	if err != nil {
 		t.Fatalf("AddURL error: %v", err)
