@@ -30,11 +30,6 @@ func TestNew(t *testing.T) {
 }
 
 func TestStore_AddURL(t *testing.T) {
-	extimestamp := timestamp
-	timestamp = func() int64 {
-		return 1257894000
-	}
-
 	store, err := New("memory")
 	if err != nil {
 		t.Fatal("Failed to make a memory store")
@@ -51,8 +46,6 @@ func TestStore_AddURL(t *testing.T) {
 	if store.get(id) != url {
 		t.Fatalf("AddURL didn't put the url into the store")
 	}
-
-	timestamp = extimestamp
 
 	// Should return the same ID for the same url
 	secondID, err := store.AddURL(url)
