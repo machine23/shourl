@@ -2,14 +2,19 @@ package store
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
+
+	"encoding/base64"
 )
+
+var storeIndex int
 
 type engine interface {
 	getID(value string) string
 	get(id string) string
-	put(value string) (string, error)
+	put(id, value string) error
 }
 
 // Store is a store for keeping URLs.
@@ -33,6 +38,11 @@ func New(storeType string) (*Store, error) {
 	}
 }
 
+func newID(v string) string {
+	storeIndex++
+	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString([]byte(strconv.Itoa(storeIndex)))
+}
+
 // Type returns a type of the store
 func (s Store) Type() string {
 	return s.storeType
@@ -49,8 +59,8 @@ func (s Store) AddURL(url string) (string, error) {
 		return id, nil
 	}
 
-	id, err := s.put(url)
-	if err != nil {
+	id = newID(url)
+	if err := s.put(id, url); err != nil {
 		return "", err
 	}
 	return id, nil

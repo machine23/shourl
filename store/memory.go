@@ -1,25 +1,20 @@
 package store
 
 import (
-	"encoding/base64"
-	"strconv"
+	"fmt"
 	"sync"
 )
 
-var storeIndex int
-
 type memory struct {
-	storage  map[string]string // ID -> Value
-	revstor  map[string]string // Value -> ID
-	encoding *base64.Encoding
-	mutex    sync.RWMutex
+	storage map[string]string // ID -> Value
+	revstor map[string]string // Value -> ID
+	mutex   sync.RWMutex
 }
 
 func makeMemoryStore() *memory {
 	s := make(map[string]string)
 	r := make(map[string]string)
-	e := base64.URLEncoding.WithPadding(base64.NoPadding)
-	return &memory{storage: s, revstor: r, encoding: e}
+	return &memory{storage: s, revstor: r}
 }
 
 // getID returns id if the value is in store.
@@ -36,12 +31,13 @@ func (m *memory) get(id string) string {
 	return m.storage[id]
 }
 
-func (m *memory) put(value string) (string, error) {
+func (m *memory) put(id, value string) error {
+	if id == "" {
+		return fmt.Errorf("Empty id is not allowed")
+	}
 	m.mutex.Lock()
-	storeIndex++
-	id := m.encoding.EncodeToString([]byte(strconv.Itoa(storeIndex)))
 	m.storage[id] = value
 	m.revstor[value] = id
 	m.mutex.Unlock()
-	return id, nil
+	return nil
 }
