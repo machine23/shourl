@@ -2,14 +2,15 @@ package store
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
+	"sync/atomic"
 	"time"
 
 	"encoding/base64"
+	"encoding/binary"
 )
 
-var storeIndex int
+var storeIndex uint32
 
 type engine interface {
 	getID(value string) string
@@ -39,8 +40,15 @@ func New(storeType string) (*Store, error) {
 }
 
 func newID(v string) string {
-	storeIndex++
-	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString([]byte(strconv.Itoa(storeIndex)))
+	b := make([]byte, 8)
+
+	binary.BigEndian.PutUint32(b[:], uint32(timestamp()))
+	i := atomic.AddUint32(&storeIndex, 1)
+	b[4] = byte(i >> 24)
+	b[5] = byte(i >> 16)
+	b[6] = byte(i >> 8)
+	b[7] = byte(i)
+	return base64.URLEncoding.WithPadding(base64.NoPadding).EncodeToString(b)
 }
 
 // Type returns a type of the store
