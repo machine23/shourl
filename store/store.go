@@ -39,7 +39,7 @@ func New(storeType string) (*Store, error) {
 	}
 }
 
-func newID(v string) string {
+func newID() string {
 	b := make([]byte, 8)
 
 	binary.BigEndian.PutUint32(b[:], uint32(timestamp()))
@@ -67,7 +67,7 @@ func (s Store) AddURL(url string) (string, error) {
 		return id, nil
 	}
 
-	id = newID(url)
+	id = newID()
 	if err := s.put(id, url); err != nil {
 		return "", err
 	}
