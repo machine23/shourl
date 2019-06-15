@@ -50,7 +50,7 @@ func TestNew(t *testing.T) {
 				}
 				return
 			}
-			if err == nil && tt.wantErr {
+			if tt.wantErr {
 				t.Errorf("No error returned when expected")
 				return
 			}
